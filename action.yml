@@ -1,0 +1,26 @@
+name: 'Build & Publish to PyPI'
+author: 'Conchylicultor'
+description: 'Build and publish to PyPI for PEP 518 compliant projects (flit, poetry,...).'
+branding:
+  icon: upload-cloud
+  color: orange
+
+inputs:
+  pypi-token:
+    description: 'Token of the PyPI account publishing the project.'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: pip install build twine
+      shell: bash
+    - run: python -m build
+      shell: bash
+    - run: twine check dist/*
+      shell: bash
+    - run: twine upload dist/*
+      shell: bash
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ inputs.pypi-token }}
