@@ -9,18 +9,26 @@ inputs:
   pypi-token:
     description: 'Token of the PyPI account publishing the project.'
     required: true
+  path:
+    description: 'Root directory of the project (containing the `pyproject.toml`).'
+    default: '.'
+    required: false
 
 runs:
   using: "composite"
   steps:
     - run: pip install build twine
       shell: bash
+      working-directory: ${{ inputs.path }}
     - run: python -m build
       shell: bash
+      working-directory: ${{ inputs.path }}
     - run: twine check dist/*
       shell: bash
+      working-directory: ${{ inputs.path }}
     - run: twine upload dist/*
       shell: bash
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ inputs.pypi-token }}
+      working-directory: ${{ inputs.path }}
